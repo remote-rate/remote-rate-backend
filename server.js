@@ -1,10 +1,68 @@
 'use strict';
 
+// install first
+// require('dotenv').config();
+
 const express = require('express');
 const app = express();
 
 const cors = require('cors');
 app.use(cors());
+
+app.use(express.json());
+
+const jwt = require('jsonwebtoken');
+
+// all of this came from jsonwebtoken docs
+// ---------------------------------------
+var jwksClient = require('jwks-rsa');
+const { response } = require('express');
+var client = jwksClient({
+  // EXCEPTION!  jwksUri comes from your single page application -> settings -> advanced settings -> endpoint -> the jwks one
+  jwksUri: 'https://dev-cb3cs25j.us.auth0.com/.well-known/jwks.json'
+});
+
+function getKey(header, callback) {
+  client.getSigningKey(header.kid, function (err, key) {
+    var signingKey = key.publicKey || key.rsaPublicKey;
+    callback(null, signingKey);
+  });
+}
+// ---------------------------------------
+
+// ---- testing endpoints ----- //
+app.get('/landing', (request, response) => {
+
+  // TODO: 
+  // STEP 1: get the jwt from the headers
+  // STEP 2. use the jsonwebtoken library to verify that it is a valid jwt
+  // jsonwebtoken dock - https://www.npmjs.com/package/jsonwebtoken
+  // STEP 3: to prove that everything is working correctly, send the opened jwt back to the front-end
+
+  try {
+    const token = request.headers.authorization.split(' ')[1];
+    jwt.verify(token, getKey, {}, function (err, user) {
+      if (err) {
+        response.status(500).send('invlaid token');
+      }
+      console.log('user: ', user);
+      response.send(user);
+    });
+  } catch (err) {
+    console.log('auth0 error', err)
+    response.status(500).send('Auth0 Error')
+  }
+});
+
+
+
+
+
+
+
+
+
+
 
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/remote-rate', {
@@ -67,7 +125,7 @@ function seed(request, response) {
       newEmployer: 'Sonic & Tails Inc.',
       newRemote: false,
       newLocation: 'Emerald City'
-      });
+    });
     user2.save();
   }
   response.send('Seeded The Database');
