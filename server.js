@@ -54,6 +54,24 @@ app.get('/landing', (request, response) => {
   }
 });
 
+app.get('/profile', (request, response) => {
+  try {
+    UserModel.find({}, (error, userData) => {
+      response.status(200).send(userData);
+    })
+  } catch (error) {
+    response.status(500).send(error);
+  }
+})
+
+app.post('/profile', (request, response) => {
+  let { email, homeLat, homeLon } = request.body;
+  let newUser = new UserModel({ email, homeLat, homeLon });
+  newUser.save();
+  console.log(request.body);
+  response.status(200).send
+});
+
 
 
 
@@ -82,6 +100,7 @@ const PORT = process.env.PORT;
 // app.get('/fuel', fuelHandler);
 
 app.get('/seed', seed);
+app.get('/clear', clear);
 
 // function fuelHandler(request, response) {
 //   const { lat, lon } = request.query;
@@ -129,6 +148,20 @@ function seed(request, response) {
     user2.save();
   }
   response.send('Seeded The Database');
+}
+async function addUser(obj) {
+  let newUser = new UserModel(obj);
+  return await newUser.save();
+}
+
+async function clear(request, response) {
+  try {
+    await UserModel.deleteMany({});
+    response.status(200).send('Bombed the DBase');
+  }
+  catch (err) {
+    response.status(500).send('Error in clearing database');
+  }
 }
 
 app.listen(PORT, () => console.log(`Server up on port ${PORT}`));
