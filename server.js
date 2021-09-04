@@ -65,11 +65,15 @@ app.get('/profile', (request, response) => {
 })
 
 app.post('/profile', (request, response) => {
-  let { email, homeLat, homeLon } = request.body;
-  let newUser = new UserModel({ email, homeLat, homeLon });
-  newUser.save();
-  console.log(request.body);
-  response.status(200).send
+  try {
+    let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal } = request.body;
+    let newUser = new UserModel({ email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
+    newUser.save();
+    console.log(newUser);
+    response.status(200).send('user added!');
+  } catch (err) {
+    response.status(500).send('Error in server');
+  }
 });
 
 
