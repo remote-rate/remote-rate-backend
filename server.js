@@ -66,10 +66,10 @@ app.get('/profile', (request, response) => {
 
 app.put('/newoffer', (request, response) => {
   try {
-    console.log(request.body);
+    console.log('this is a new offer', request.body);
     const email = request.params.email;
     const data = request.body.data;
-
+    response.status(200).send('Niiiiice');
   } catch (err) {
     response.status(500).send('Error in server when adding offer');
   }
