@@ -64,6 +64,26 @@ app.get('/profile', (request, response) => {
   }
 })
 
+app.put('/newoffer', (request, response) => {
+  try {
+    console.log(request.body);
+    const email = request.params.email;
+    const data = request.body.data;
+
+  } catch (err) {
+    response.status(500).send('Error in server when adding offer');
+  }
+});
+
+class Offer {
+  constructor(data) {
+    this.newSalary = data.newSalary;
+    this.newEmployer = data.newEmployer;
+    this.newRemote = data.newRemote;
+    this.newLocation = data.newLocation;
+  }
+}
+
 app.post('/profile', (request, response) => {
   try {
     let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal } = request.body;
