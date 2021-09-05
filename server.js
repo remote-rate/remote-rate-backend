@@ -65,19 +65,41 @@ app.get('/profile', (request, response) => {
 })
 
 
-app.put('/newoffer/:id', (request, response) => {
+// app.put('/newoffer/:id', async(request, response) => {
+//   try {
+//     console.log('this is a new offer', request.body);
+//     const id = request.params.id;
+
+//     let updatedUser = await UserModel.findByIdAndUpdate(
+//       id,
+//       { newJob: request.body },
+//       { new: true, overwrite: true }
+//     );
+//     response.status(200).send(updatedUser);
+//   } catch (err) {
+//     response.status(500).send('Error in server when adding offer');
+//   }
+// });
+
+
+app.put('/newoffer/:id', async(request, response) => {
   try {
     console.log('this is a new offer', request.body);
     const id = request.params.id;
-    console.log('id', id)
-    const email = request.params.email;
-    const data = request.body.data;
-    response.status(200).send('Niiiiice');
+
+    let retrievedUser = await UserModel.find(
+      {_id: id},
+      
+    );
+    console.log('before retrievedUser ',retrievedUser.newJob);
+    retrievedUser.newJob = request.body
+    console.log('after retrievedUser ',retrievedUser.newJob);
+
+    response.status(200).send(retrievedUser);
   } catch (err) {
     response.status(500).send('Error in server when adding offer');
   }
 });
-
 
 // app.post('/profile', async (request, response) => {
 //   let { newSalary, newEmployer, newRemote, newLocation, workLat, workLon } = request.body;
