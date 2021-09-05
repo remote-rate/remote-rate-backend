@@ -82,18 +82,18 @@ app.get('/profile', (request, response) => {
 // });
 
 
-app.put('/newoffer/:id', async(request, response) => {
+app.put('/newoffer/:id', async (request, response) => {
   try {
     console.log('this is a new offer', request.body);
     const id = request.params.id;
 
     let retrievedUser = await UserModel.find(
-      {_id: id},
-      
+      { _id: id },
+
     );
-    console.log('before retrievedUser ',retrievedUser.newJob);
+    console.log('before retrievedUser ', retrievedUser.newJob);
     retrievedUser.newJob = request.body
-    console.log('after retrievedUser ',retrievedUser.newJob);
+    console.log('after retrievedUser ', retrievedUser.newJob);
 
     response.status(200).send(retrievedUser);
   } catch (err) {
@@ -117,10 +117,45 @@ app.put('/newoffer/:id', async(request, response) => {
 
 app.post('/profile', (request, response) => {
   try {
-    let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal } = request.body;
-    let newUser = new UserModel({ email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
+    let { 
+      email,
+      homeLat,
+      homeLon,
+      curEmployer,
+      curSalary,
+      curRemote,
+      commuteDist,
+      milesPerGal,
+      newJob: {
+        newSalary,
+        newEmployer,
+        newRemote,
+        newLocation,
+        workLat,
+        workLon
+      } } = request.body;
+
+
+    let newUser = new UserModel({ 
+      email, 
+      homeLat, 
+      homeLon, 
+      curEmployer, 
+      curSalary, 
+      curRemote, 
+      commuteDist, 
+      milesPerGal,
+      newJob: {
+        newSalary,
+        newEmployer,
+        newRemote,
+        newLocation,
+        workLat,
+        workLon, }
+      })
+
     newUser.save();
-    console.log(newUser);
+    console.log('inside Post', newUser);
     response.status(200).send('user added!');
   } catch (err) {
     response.status(500).send('Error in server');
