@@ -69,10 +69,10 @@ app.get('/landing', (request, response) => {
 });
 app.get('/profile', (request, response) => {
   try {
-      UserModel.find({}, (error, userData) => {
-        console.log(userData);
-        response.status(200).send(userData);
-      })
+    UserModel.find({}, (error, userData) => {
+      console.log('Alluser data to be sent: ', userData);
+      response.status(200).send(userData);
+    })
   } catch (error) {
     response.status(500).send(error);
   }
@@ -80,7 +80,7 @@ app.get('/profile', (request, response) => {
 app.post('/profile', (request, response) => {
   try {
     let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal } = request.body;
-    let newUser = new UserModel({ email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
+    let newUser = new UserModel({ email, homeLat, homeLon, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
     newUser.save();
     console.log(newUser);
     response.status(200).send('user added!');
@@ -88,18 +88,19 @@ app.post('/profile', (request, response) => {
     response.status(500).send('Error in server');
   }
 });
-app.put('/newoffer/:id', async(request, response) => {
+app.put('/newoffer/:id', async (request, response) => {
   try {
     console.log('this is a new offer', request.body);
     const id = request.params.id;
     console.log('id', id);
+    let updateUser = await UserModel.findByIdAndUpdate(id, request.body, { new: true, overwrite: true });
 
-    let updateUser = await UserModel.findByIdAndUpdate(id, request.body,{ new: true, overwrite: true });
-    console.log('before retrievedUser ',retrievedUser.newJob);
+    console.log('before retrievedUser ', retrievedUser.newJob);
     retrievedUser.newJob = request.body
-    console.log('after retrievedUser ',retrievedUser.newJob);
+    console.log('after retrievedUser ', retrievedUser.newJob);
 
     response.status(200).send(updateUser);
+
   } catch (err) {
     response.status(500).send('Error in server when adding offer');
   }
