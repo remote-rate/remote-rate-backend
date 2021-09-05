@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String },
   homeLat: { type: String, required: true },
   homeLon: { type: String, required: true },
+  workLat: { type: String},
+  workLon: { type: String},
   curEmployer: { type: String },
   employerLoc: { type: String },
   curSalary: { type: Number},
@@ -20,6 +22,6 @@ const userSchema = new mongoose.Schema({
   }]
 });
 
-const BookModel = mongoose.model('user', userSchema);
+const UserModel = mongoose.model('user', userSchema);
 
-module.exports = BookModel;
+module.exports = UserModel;
