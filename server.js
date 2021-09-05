@@ -64,9 +64,12 @@ app.get('/profile', (request, response) => {
   }
 })
 
-app.put('/newoffer', (request, response) => {
+
+app.put('/newoffer/:id', (request, response) => {
   try {
     console.log('this is a new offer', request.body);
+    const id = request.params.id;
+    console.log('id', id)
     const email = request.params.email;
     const data = request.body.data;
     response.status(200).send('Niiiiice');
@@ -75,14 +78,20 @@ app.put('/newoffer', (request, response) => {
   }
 });
 
-class Offer {
-  constructor(data) {
-    this.newSalary = data.newSalary;
-    this.newEmployer = data.newEmployer;
-    this.newRemote = data.newRemote;
-    this.newLocation = data.newLocation;
-  }
-}
+
+// app.post('/profile', async (request, response) => {
+//   let { newSalary, newEmployer, newRemote, newLocation, workLat, workLon } = request.body;
+//   try {
+//     let updatedUser = await UserModel.findByIdAndUpdate(
+//       id,
+//       { newSalary, newEmployer, newRemote, newLocation, workLat, workLon },
+//       { new: true, overwrite: true }
+//     );
+//     response.status(200).send(updatedUser);
+//   } catch (err) {
+//     response.status(500).send("Error updating the books information");
+//   }
+// })
 
 app.post('/profile', (request, response) => {
   try {
@@ -97,6 +106,46 @@ app.post('/profile', (request, response) => {
 });
 
 
+
+class Offer {
+  constructor(data) {
+    this.newSalary = data.newSalary;
+    this.newEmployer = data.newEmployer;
+    this.newRemote = data.newRemote;
+    this.newLocation = data.newLocation;
+  }
+}
+
+// app.post('/profile', (request, response) => {
+//   try {
+//     let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal } = request.body;
+//     let newUser = new UserModel({ email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
+//     newUser.save();
+//     console.log(newUser);
+//     response.status(200).send('user added!');
+//   } catch (err) {
+//     response.status(500).send('Error in server');
+//   }
+// });
+
+// app.post('./newoffer', (request, response) => {
+//   try {
+//     let {newSalary, newEmployer, newRemote, newLocation, workLat, workLon, } = request.body;
+//   new UserModel({
+//     newJob: [
+//       newSalary,
+//       newEmployer,
+//       newRemote,
+//       newLocation,
+//       workLat,
+//       workLon,
+//     ]
+//   })
+// } catch (error) {
+//   console.log(error)
+// }
+
+// })
 
 
 
