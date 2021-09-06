@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     newSalary: { type: Number },
     newEmployer: { type: String },
     newRemote: { type: Boolean },
+    newCommuteDist: {type: Number},
     newLocation: { type: String }
   }]
 });

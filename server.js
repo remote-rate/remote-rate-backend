@@ -94,7 +94,6 @@ app.put('/newoffer/:id', async (request, response) => {
     const id = request.params.id;
     console.log('id', id);
     let updateUser = await UserModel.findByIdAndUpdate(id, request.body, { new: true, overwrite: true });
-
     console.log('before retrievedUser ', retrievedUser.newJob);
     retrievedUser.newJob = request.body
     console.log('after retrievedUser ', retrievedUser.newJob);
