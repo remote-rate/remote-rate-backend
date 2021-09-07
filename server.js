@@ -11,6 +11,20 @@ app.use(cors());
 
 app.use(express.json());
 
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://127.0.0.1:27017/remote-rate', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(async () => {
+  console.log('Connected to the database');
+});
+
+require('dotenv').config();
+
+const UserModel = require('./models/users.js');
+const PORT = process.env.PORT;
+
+
 const jwt = require('jsonwebtoken');
 
 // all of this came from jsonwebtoken docs
@@ -53,41 +67,20 @@ app.get('/landing', (request, response) => {
     response.status(500).send('Auth0 Error')
   }
 });
-
 app.get('/profile', (request, response) => {
   try {
     UserModel.find({}, (error, userData) => {
+      console.log('Alluser data to be sent: ', userData);
       response.status(200).send(userData);
     })
   } catch (error) {
     response.status(500).send(error);
   }
 })
-
-app.put('/newoffer', (request, response) => {
-  try {
-    console.log('this is a new offer', request.body);
-    const email = request.params.email;
-    const data = request.body.data;
-    response.status(200).send('Niiiiice');
-  } catch (err) {
-    response.status(500).send('Error in server when adding offer');
-  }
-});
-
-class Offer {
-  constructor(data) {
-    this.newSalary = data.newSalary;
-    this.newEmployer = data.newEmployer;
-    this.newRemote = data.newRemote;
-    this.newLocation = data.newLocation;
-  }
-}
-
 app.post('/profile', (request, response) => {
   try {
     let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal } = request.body;
-    let newUser = new UserModel({ email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
+    let newUser = new UserModel({ email, homeLat, homeLon, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
     newUser.save();
     console.log(newUser);
     response.status(200).send('user added!');
@@ -95,47 +88,29 @@ app.post('/profile', (request, response) => {
     response.status(500).send('Error in server');
   }
 });
+app.put('/newoffer/:id', async (request, response) => {
+  try {
+    console.log('this is a new offer', request.body);
+    const id = request.params.id;
+    console.log('id', id);
+    let updateUser = await UserModel.findByIdAndUpdate(id, request.body, { new: true, overwrite: true });
+    console.log('before retrievedUser ', retrievedUser.newJob);
+    retrievedUser.newJob = request.body
+    console.log('after retrievedUser ', retrievedUser.newJob);
 
+    response.status(200).send(updateUser);
 
-
-
-
-
-
-
-
-
-
-const mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/remote-rate', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(async () => {
-  console.log('Connected to the database');
+  } catch (err) {
+    response.status(500).send('Error in server when adding offer');
+  }
 });
 
-require('dotenv').config();
-
-const UserModel = require('./models/users.js');
-const PORT = process.env.PORT;
-
-// const fuel = require('./modules/fuel.js');
-
-// app.get('/fuel', fuelHandler);
 
 app.get('/seed', seed);
 app.get('/clear', clear);
 
-// function fuelHandler(request, response) {
-//   const { lat, lon } = request.query;
-//   fuel(lat, lon)
-//     .then(avgFuel => response.send(avgFuel))
-//     .catch((error) => {
-//       console.error(error);
-//       response.status(200).send('Sorry. Something went wrong!');
-//     });
-// }
 
+// Functions
 function seed(request, response) {
   let users = UserModel.find({});
   if (users.length < 3) {
@@ -177,7 +152,6 @@ async function addUser(obj) {
   let newUser = new UserModel(obj);
   return await newUser.save();
 }
-
 async function clear(request, response) {
   try {
     await UserModel.deleteMany({});
