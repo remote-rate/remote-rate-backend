@@ -1,8 +1,5 @@
 'use strict';
 
-// install first
-// require('dotenv').config();
-
 const express = require('express');
 const app = express();
 
@@ -79,8 +76,8 @@ app.get('/profile', (request, response) => {
 })
 app.post('/profile', (request, response) => {
   try {
-    let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal } = request.body;
-    let newUser = new UserModel({ email, homeLat, homeLon, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
+    let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, newCommuteTime, milesPerGal } = request.body;
+    let newUser = new UserModel({ email, homeLat, homeLon, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, newCommuteTime, milesPerGal });
     newUser.save();
     console.log(newUser);
     response.status(200).send('user added!');
