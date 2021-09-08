@@ -56,18 +56,15 @@ app.get('/landing', (request, response) => {
       if (err) {
         response.status(500).send('invlaid token');
       }
-      console.log('user: ', user);
       response.send(user);
     });
   } catch (err) {
-    console.log('auth0 error', err)
     response.status(500).send('Auth0 Error')
   }
 });
 app.get('/profile', (request, response) => {
   try {
     UserModel.find({}, (error, userData) => {
-      console.log('Alluser data to be sent: ', userData);
       response.status(200).send(userData);
     })
   } catch (error) {
@@ -79,7 +76,6 @@ app.post('/profile', (request, response) => {
     let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, newCommuteTime, milesPerGal } = request.body;
     let newUser = new UserModel({ email, homeLat, homeLon, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, newCommuteTime, milesPerGal });
     newUser.save();
-    console.log(newUser);
     response.status(200).send('user added!');
   } catch (err) {
     response.status(500).send('Error in server');
@@ -87,26 +83,25 @@ app.post('/profile', (request, response) => {
 });
 app.put('/newoffer/:id', async (request, response) => {
   try {
-    console.log('this is a new offer', request.body);
     const id = request.params.id;
-    console.log('id', id);
     let updateUser = await UserModel.findByIdAndUpdate(id, request.body, { new: true, overwrite: true });
-    console.log('before retrievedUser ', retrievedUser.newJob);
-    retrievedUser.newJob = request.body
-    console.log('after retrievedUser ', retrievedUser.newJob);
-
     response.status(200).send(updateUser);
-
   } catch (err) {
     response.status(500).send('Error in server when adding offer');
   }
 });
 
-// app.delete('/profile/:id', async (request, response) => {
-//   const id = request.params.id;
-//   const offer = await UserModel.findByIdAndDelete({_id:id});
-//   response.status(200).send('Deleted');
-// });
+app.put('/profile/:id', async (request, response) => {
+  console.log('hit the delete backend');
+  const id = request.params.id;
+  console.log('this is the id', id);
+  console.log('tats my bareh', request.body);
+  const offer = await UserModel.findByIdAndUpdate(id, request.body, { new: true, overwrite: true});
+  console.log(request);
+  console.log(offer);
+  console.log(id);
+  response.status(200).send('Deleted');
+});
 
 
 app.get('/seed', seed);
