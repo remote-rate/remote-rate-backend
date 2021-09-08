@@ -105,6 +105,12 @@ app.put('/newoffer/:id', async (request, response) => {
   }
 });
 
+// app.delete('/profile/:id', async (request, response) => {
+//   const id = request.params.id;
+//   const offer = await UserModel.findByIdAndDelete({_id:id});
+//   response.status(200).send('Deleted');
+// });
+
 
 app.get('/seed', seed);
 app.get('/clear', clear);
