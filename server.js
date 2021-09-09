@@ -7,16 +7,16 @@ const cors = require('cors');
 app.use(cors());
 
 app.use(express.json());
+require('dotenv').config();
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/remote-rate', {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 }).then(async () => {
   console.log('Connected to the database');
 });
 
-require('dotenv').config();
 
 const UserModel = require('./models/users.js');
 const PORT = process.env.PORT;
