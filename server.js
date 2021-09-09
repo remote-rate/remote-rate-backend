@@ -1,8 +1,5 @@
 'use strict';
 
-// install first
-// require('dotenv').config();
-
 const express = require('express');
 const app = express();
 
@@ -24,7 +21,6 @@ require('dotenv').config();
 const UserModel = require('./models/users.js');
 const PORT = process.env.PORT;
 
-
 const jwt = require('jsonwebtoken');
 
 // all of this came from jsonwebtoken docs
@@ -44,14 +40,7 @@ function getKey(header, callback) {
 }
 // ---------------------------------------
 
-// ---- testing endpoints ----- //
 app.get('/landing', (request, response) => {
-
-  // TODO: 
-  // STEP 1: get the jwt from the headers
-  // STEP 2. use the jsonwebtoken library to verify that it is a valid jwt
-  // jsonwebtoken dock - https://www.npmjs.com/package/jsonwebtoken
-  // STEP 3: to prove that everything is working correctly, send the opened jwt back to the front-end
 
   try {
     const token = request.headers.authorization.split(' ')[1];
@@ -59,18 +48,15 @@ app.get('/landing', (request, response) => {
       if (err) {
         response.status(500).send('invlaid token');
       }
-      console.log('user: ', user);
       response.send(user);
     });
   } catch (err) {
-    console.log('auth0 error', err)
     response.status(500).send('Auth0 Error')
   }
 });
 app.get('/profile', (request, response) => {
   try {
     UserModel.find({}, (error, userData) => {
-      console.log('Alluser data to be sent: ', userData);
       response.status(200).send(userData);
     })
   } catch (error) {
@@ -79,10 +65,9 @@ app.get('/profile', (request, response) => {
 })
 app.post('/profile', (request, response) => {
   try {
-    let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal } = request.body;
-    let newUser = new UserModel({ email, homeLat, homeLon, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, milesPerGal });
+    let { email, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, newCommuteTime, milesPerGal } = request.body;
+    let newUser = new UserModel({ email, homeLat, homeLon, homeLat, homeLon, curEmployer, curSalary, curRemote, commuteDist, newCommuteTime, milesPerGal });
     newUser.save();
-    console.log(newUser);
     response.status(200).send('user added!');
   } catch (err) {
     response.status(500).send('Error in server');
@@ -90,68 +75,22 @@ app.post('/profile', (request, response) => {
 });
 app.put('/newoffer/:id', async (request, response) => {
   try {
-    console.log('this is a new offer', request.body);
     const id = request.params.id;
-    console.log('id', id);
     let updateUser = await UserModel.findByIdAndUpdate(id, request.body, { new: true, overwrite: true });
-    console.log('before retrievedUser ', retrievedUser.newJob);
-    retrievedUser.newJob = request.body
-    console.log('after retrievedUser ', retrievedUser.newJob);
-
     response.status(200).send(updateUser);
-
   } catch (err) {
     response.status(500).send('Error in server when adding offer');
   }
 });
 
+app.put('/profile/:id', async (request, response) => {
+  const id = request.params.id;
+  const offer = await UserModel.findByIdAndUpdate(id, request.body, { new: true, overwrite: true});
+  response.status(200).send('Deleted');
+});
 
-app.get('/seed', seed);
 app.get('/clear', clear);
 
-
-// Functions
-function seed(request, response) {
-  let users = UserModel.find({});
-  if (users.length < 3) {
-    let user1 = new UserModel({
-      email: 'phillipdeanmurphy@gmail.com',
-      homeAddress: '123 Main St. Atlanta, GA',
-      curEmployer: 'Dr. Robotnik Labs',
-      employerLoc: '456 IHateSonic Dr. Hooville, MD',
-      curSalary: 85000,
-      curRemote: false,
-      commuteDist: 18,
-      milesPerGal: 27,
-      newSalary: { type: Number },
-      newEmployer: { type: String },
-      newRemote: { type: Boolean },
-      newLocation: { type: String }
-    });
-    user1.save();
-
-    let user2 = new UserModel({
-      email: 'phillipdeanmurphy@gmail.com',
-      homeAddress: '123 Main St. Atlanta, GA',
-      curEmployer: 'Dr. Robotnik Labs',
-      employerLoc: '456 IHateSonic Dr. Hooville, MD',
-      curSalary: 85000,
-      curRemote: false,
-      commuteDist: 18,
-      milesPerGal: 27,
-      newSalary: 90000,
-      newEmployer: 'Sonic & Tails Inc.',
-      newRemote: false,
-      newLocation: 'Emerald City'
-    });
-    user2.save();
-  }
-  response.send('Seeded The Database');
-}
-async function addUser(obj) {
-  let newUser = new UserModel(obj);
-  return await newUser.save();
-}
 async function clear(request, response) {
   try {
     await UserModel.deleteMany({});
