@@ -21,7 +21,6 @@ require('dotenv').config();
 const UserModel = require('./models/users.js');
 const PORT = process.env.PORT;
 
-
 const jwt = require('jsonwebtoken');
 
 // all of this came from jsonwebtoken docs
@@ -41,14 +40,7 @@ function getKey(header, callback) {
 }
 // ---------------------------------------
 
-// ---- testing endpoints ----- //
 app.get('/landing', (request, response) => {
-
-  // TODO: 
-  // STEP 1: get the jwt from the headers
-  // STEP 2. use the jsonwebtoken library to verify that it is a valid jwt
-  // jsonwebtoken dock - https://www.npmjs.com/package/jsonwebtoken
-  // STEP 3: to prove that everything is working correctly, send the opened jwt back to the front-end
 
   try {
     const token = request.headers.authorization.split(' ')[1];
@@ -92,64 +84,13 @@ app.put('/newoffer/:id', async (request, response) => {
 });
 
 app.put('/profile/:id', async (request, response) => {
-  console.log('hit the delete backend');
   const id = request.params.id;
-  console.log('this is the id', id);
-  console.log('tats my bareh', request.body);
   const offer = await UserModel.findByIdAndUpdate(id, request.body, { new: true, overwrite: true});
-  console.log(request);
-  console.log(offer);
-  console.log(id);
   response.status(200).send('Deleted');
 });
 
-
-app.get('/seed', seed);
 app.get('/clear', clear);
 
-
-// Functions
-function seed(request, response) {
-  let users = UserModel.find({});
-  if (users.length < 3) {
-    let user1 = new UserModel({
-      email: 'phillipdeanmurphy@gmail.com',
-      homeAddress: '123 Main St. Atlanta, GA',
-      curEmployer: 'Dr. Robotnik Labs',
-      employerLoc: '456 IHateSonic Dr. Hooville, MD',
-      curSalary: 85000,
-      curRemote: false,
-      commuteDist: 18,
-      milesPerGal: 27,
-      newSalary: { type: Number },
-      newEmployer: { type: String },
-      newRemote: { type: Boolean },
-      newLocation: { type: String }
-    });
-    user1.save();
-
-    let user2 = new UserModel({
-      email: 'phillipdeanmurphy@gmail.com',
-      homeAddress: '123 Main St. Atlanta, GA',
-      curEmployer: 'Dr. Robotnik Labs',
-      employerLoc: '456 IHateSonic Dr. Hooville, MD',
-      curSalary: 85000,
-      curRemote: false,
-      commuteDist: 18,
-      milesPerGal: 27,
-      newSalary: 90000,
-      newEmployer: 'Sonic & Tails Inc.',
-      newRemote: false,
-      newLocation: 'Emerald City'
-    });
-    user2.save();
-  }
-  response.send('Seeded The Database');
-}
-async function addUser(obj) {
-  let newUser = new UserModel(obj);
-  return await newUser.save();
-}
 async function clear(request, response) {
   try {
     await UserModel.deleteMany({});
